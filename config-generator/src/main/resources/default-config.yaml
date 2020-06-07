@@ -24,6 +24,7 @@ keystore:
   type: pkcs12
 xsite:
   masterCandidate: true
+  transport: tcp
 
 logging:
   console:
