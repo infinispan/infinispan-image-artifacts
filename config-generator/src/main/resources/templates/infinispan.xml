@@ -140,50 +140,52 @@
             </security-realms>
         </security>
 
-        <endpoints socket-binding="default" security-realm="default" {#if endpoints.clientCert != "none"}require-ssl-client-auth="true"{/if}>
-            {#if endpoints.hotrod.enabled}
-            {#if endpoints.auth}
-            <hotrod-connector>
-                <authentication>
-                    <sasl qop="{endpoints.hotrod.qop}" server-name="{endpoints.hotrod.serverName}"/>
-                </authentication>
-            </hotrod-connector>
-            {#else}
-            <hotrod-connector />
-            {/if}
-            {/if}
-
-            {#if endpoints.rest.enabled}
-                {#if endpoints.rest.cors}
-                <rest-connector>
-                <cors-rules>
-                    {#for rule in endpoints.rest.cors}
-                    <cors-rule name="{rule.name}" allow-credentials="{rule.allowCredentials or 'false'}"
-                               max-age-seconds="{rule.maxAgeSeconds or 0}">
-                        {rule.allowedOrigins.listElement('allowed-origins') or ''}
-                        {rule.allowedMethods.listElement('allowed-methods') or ''}
-                        {rule.allowedHeaders.listElement('allowed-headers') or ''}
-                        {rule.exposeHeaders.listElement('expose-headers') or ''}
-                    </cors-rule>
-                    {/for}
-                </cors-rules>
-                </rest-connector>
+        <endpoints>
+            <endpoint socket-binding="default" security-realm="default" {#if endpoints.clientCert != "none"}require-ssl-client-auth="true"{/if}>
+                {#if endpoints.hotrod.enabled}
+                {#if endpoints.auth}
+                <hotrod-connector>
+                    <authentication>
+                        <sasl qop="{endpoints.hotrod.qop}" server-name="{endpoints.hotrod.serverName}"/>
+                    </authentication>
+                </hotrod-connector>
                 {#else}
-                <rest-connector />
+                <hotrod-connector />
                 {/if}
-            {/if}
+                {/if}
 
-            {#if endpoints.memcached.enabled}
-            <memcached-connector socket-binding="memcached"/>
+                {#if endpoints.rest.enabled}
+                    {#if endpoints.rest.cors}
+                    <rest-connector>
+                    <cors-rules>
+                        {#for rule in endpoints.rest.cors}
+                        <cors-rule name="{rule.name}" allow-credentials="{rule.allowCredentials or 'false'}"
+                                   max-age-seconds="{rule.maxAgeSeconds or 0}">
+                            {rule.allowedOrigins.listElement('allowed-origins') or ''}
+                            {rule.allowedMethods.listElement('allowed-methods') or ''}
+                            {rule.allowedHeaders.listElement('allowed-headers') or ''}
+                            {rule.exposeHeaders.listElement('expose-headers') or ''}
+                        </cors-rule>
+                        {/for}
+                    </cors-rules>
+                    </rest-connector>
+                    {#else}
+                    <rest-connector />
+                    {/if}
+                {/if}
+
+                {#if endpoints.memcached.enabled}
+                <memcached-connector socket-binding="memcached"/>
+                {/if}
+            </endpoint>
+
+            {#if endpoints.dedicatedAdmin}
+            <endpoint socket-binding="admin" security-realm="admin">
+                <rest-connector>
+                    <authentication mechanisms="BASIC DIGEST"/>
+                </rest-connector>
+            </endpoint>
             {/if}
         </endpoints>
-
-        {#if endpoints.dedicatedAdmin}
-        <endpoints socket-binding="admin" security-realm="admin">
-            <rest-connector>
-                <authentication mechanisms="BASIC DIGEST"/>
-            </rest-connector>
-        </endpoints>
-        {/if}
     </server>
 </infinispan>
