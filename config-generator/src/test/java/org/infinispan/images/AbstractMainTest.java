@@ -69,14 +69,14 @@ abstract class AbstractMainTest {
    void testMemcachedDisabledByDefault() throws Exception {
       generateDefault()
             .infinispan()
-            .doesNotHaveXPath("//i:infinispan/s:server/s:endpoints[@socket-binding='default'][1]/s:memcached-connector");
+            .doesNotHaveXPath("//i:infinispan/s:server/s:endpoints/s:endpoint[@socket-binding='default'][1]/s:memcached-connector");
    }
 
    @Test
    void testEnableMemcached() throws Exception {
       generate("memcached-enabled")
             .infinispan()
-            .hasXPath("//i:infinispan/s:server/s:endpoints[@socket-binding='default'][1]/s:memcached-connector");
+            .hasXPath("//i:infinispan/s:server/s:endpoints/s:endpoint[@socket-binding='default'][1]/s:memcached-connector");
    }
 
    @Test
@@ -94,7 +94,7 @@ abstract class AbstractMainTest {
    }
 
    void testClientCert(XmlAssert xml, boolean authenticate) {
-      xml.hasXPath("//i:infinispan/s:server/s:endpoints[@socket-binding='default'][1]").haveAttribute("require-ssl-client-auth", "true");
+      xml.hasXPath("//i:infinispan/s:server/s:endpoints/s:endpoint[@socket-binding='default'][1]").haveAttribute("require-ssl-client-auth", "true");
       xml.hasXPath("//i:infinispan/s:server/s:security/s:security-realms/s:security-realm[@name='default']/s:server-identities/s:ssl/s:truststore")
             .haveAttribute("path", "/some/keystore.jks")
             .haveAttribute("password", "secret");
@@ -112,7 +112,7 @@ abstract class AbstractMainTest {
    void testRestDisabled() throws Exception {
       generate("rest-disabled")
             .infinispan()
-            .doesNotHaveXPath("//i:infinispan/s:server/s:endpoints[@socket-binding='default'][1]/s:rest-connector");
+            .doesNotHaveXPath("//i:infinispan/s:server/s:endpoints/s:endpoint[@socket-binding='default'][1]/s:rest-connector");
    }
 
    @Test
@@ -147,9 +147,9 @@ abstract class AbstractMainTest {
       xml.doesNotHaveXPath("//i:infinispan/s:server/s:security/s:security-realms/s:security-realm[@name='default']/s:truststore-realm");
       xml.doesNotHaveXPath("//i:infinispan/s:server/s:security/s:security-realms/s:security-realm[@name='default']/s:server-identities/s:ssl/s:trustore");
       xml.hasXPath("//i:infinispan/s:server/s:security/s:security-realms/s:security-realm[@name='default']/s:properties-realm");
-      xml.hasXPath("//i:infinispan/s:server/s:endpoints")
+      xml.hasXPath("//i:infinispan/s:server/s:endpoints/s:endpoint")
             .haveAttribute("security-realm");
-      xml.hasXPath("//i:infinispan/s:server/s:endpoints[@socket-binding='default'][1]/s:hotrod-connector/s:authentication/s:sasl")
+      xml.hasXPath("//i:infinispan/s:server/s:endpoints/s:endpoint[@socket-binding='default'][1]/s:hotrod-connector/s:authentication/s:sasl")
             .haveAttribute("qop", "auth")
             .haveAttribute("server-name", "infinispan");
    }
@@ -158,15 +158,15 @@ abstract class AbstractMainTest {
    void testAuthDisabled() throws Exception {
       XmlAssert xml = generate("auth-disabled").infinispan();
       xml.doesNotHaveXPath("//i:infinispan/s:server/s:security/s:security-realms/s:security-realm[@name='default']/s:properties-realm");
-      xml.doesNotHaveXPath("//i:infinispan/s:server/s:endpoints[@socket-binding='default'][1]/s:hotrod-connector/s:authentication");
-      xml.hasXPath("//i:infinispan/s:server/s:endpoints")
+      xml.doesNotHaveXPath("//i:infinispan/s:server/s:endpoints/s:endpoint[@socket-binding='default'][1]/s:hotrod-connector/s:authentication");
+      xml.hasXPath("//i:infinispan/s:server/s:endpoints/s:endpoint")
          .haveAttribute("security-realm");
    }
 
    @Test
    void testRestCorsRules() throws Exception {
       XmlAssert xml = generate("rest-cors-rules").infinispan();
-      String rulesPath = "//i:infinispan/s:server/s:endpoints[@socket-binding='default'][1]/s:rest-connector/s:cors-rules/";
+      String rulesPath = "//i:infinispan/s:server/s:endpoints/s:endpoint[@socket-binding='default'][1]/s:rest-connector/s:cors-rules/";
       String rule = rulesPath + "s:cors-rule[1]";
       xml.hasXPath(rule)
             .haveAttribute("name", "restrict-host1")
@@ -519,7 +519,7 @@ abstract class AbstractMainTest {
       infinispan.hasXPath("//i:infinispan/s:server/s:socket-bindings/s:socket-binding[@name='admin'][1]")
             .haveAttribute("port", "11223");
 
-      infinispan.hasXPath("//i:infinispan/s:server/s:endpoints[@socket-binding='admin' and @security-realm='admin'][1]/s:rest-connector/s:authentication")
+      infinispan.hasXPath("//i:infinispan/s:server/s:endpoints/s:endpoint[@socket-binding='admin' and @security-realm='admin'][1]/s:rest-connector/s:authentication")
       .haveAttribute("mechanisms", "BASIC DIGEST");
    }
 
