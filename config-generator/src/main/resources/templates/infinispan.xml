@@ -184,6 +184,7 @@
                 <rest-connector>
                     <authentication mechanisms="BASIC DIGEST"/>
                 </rest-connector>
+                <hotrod-connector />
             </endpoint>
             {/if}
         </endpoints>
