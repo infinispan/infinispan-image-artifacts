@@ -521,6 +521,8 @@ abstract class AbstractMainTest {
 
       infinispan.hasXPath("//i:infinispan/s:server/s:endpoints/s:endpoint[@socket-binding='admin' and @security-realm='admin'][1]/s:rest-connector/s:authentication")
       .haveAttribute("mechanisms", "BASIC DIGEST");
+
+      infinispan.hasXPath("//i:infinispan/s:server/s:endpoints/s:endpoint[@socket-binding='admin' and @security-realm='admin'][1]/s:hotrod-connector");
    }
 
    @Test
