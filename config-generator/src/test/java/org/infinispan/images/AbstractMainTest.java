@@ -434,6 +434,7 @@ abstract class AbstractMainTest {
       XmlAssert infinispan = infinispan();
 
       assertStack(infinispan, null);
+      assertNoJGroupsTLS(infinispan);
 
       assertStackFile(infinispan, "relay-global")
             .haveAttribute("name", "relay-global")
@@ -564,6 +565,58 @@ abstract class AbstractMainTest {
             .haveAttribute("bootstrap-servers", "127.0.0.1:9092,192.168.1.14:9092")
             .haveAttribute("acks", "1")
             .haveAttribute("cache-entries-topic","target-topic");
+   }
+
+   @Test
+   void testJGroupsTLS() throws Exception {
+      doJGroupsTLSTest("jgroups-tls-full", true, true);
+   }
+
+   @Test
+   void testJGroupsTLSWithoutTruststore() throws Exception {
+      doJGroupsTLSTest("jgroups-tls-keystore", true, false);
+   }
+
+   @Test
+   void testJGroupsTLSWithoutKeystore() throws Exception {
+      doJGroupsTLSTest("jgroups-tls-truststore", false, true);
+   }
+
+   @Test
+   void testJGroupsTLSWithoutKeystoreAndTruststore() throws Exception {
+      doJGroupsTLSTest("jgroups-tls-simple", false, false);
+   }
+
+   private void doJGroupsTLSTest(String filename, boolean hasKeystore, boolean hasTruststore) throws Exception {
+      XmlAssert infinispan = generate(filename).infinispan();
+
+      infinispan.hasXPath("//i:infinispan/i:cache-container/i:transport")
+            .haveAttribute("security-realm", "transport");
+
+      if (hasKeystore) {
+         infinispan.hasXPath("//i:infinispan/s:server/s:security/s:security-realms/s:security-realm[@name='transport']/s:server-identities/s:ssl/s:keystore")
+               .haveAttribute("path", "jgroups-keystore.p12")
+               .haveAttribute("keystore-password", "secret")
+               .haveAttribute("alias", "transport");
+      } else {
+         infinispan.hasXPath("//i:infinispan/s:server/s:security/s:security-realms/s:security-realm[@name='transport']/s:server-identities/s:ssl");
+         infinispan.doesNotHaveXPath("//i:infinispan/s:server/s:security/s:security-realms/s:security-realm[@name='transport']/s:server-identities/s:ssl/s:keystore");
+      }
+
+      if (hasTruststore) {
+         infinispan.hasXPath("//i:infinispan/s:server/s:security/s:security-realms/s:security-realm[@name='transport']/s:server-identities/s:ssl/s:truststore")
+               .haveAttribute("path", "jgroups-truststore.p12")
+               .haveAttribute("password", "anotherSecret");
+      } else {
+         infinispan.hasXPath("//i:infinispan/s:server/s:security/s:security-realms/s:security-realm[@name='transport']/s:server-identities/s:ssl");
+         infinispan.doesNotHaveXPath("//i:infinispan/s:server/s:security/s:security-realms/s:security-realm[@name='transport']/s:server-identities/s:ssl/s:truststore");
+      }
+   }
+
+   private void assertNoJGroupsTLS(XmlAssert infinispan) {
+      infinispan.hasXPath("//i:infinispan/i:cache-container/i:transport")
+            .doNotHaveAttribute("security-realm");
+      infinispan.doesNotHaveXPath("//i:infinispan/s:server/s:security/s:security-realms/s:security-realm[@name='transport']");
    }
 
    MultipleNodeAssert assertStack(XmlAssert xml, String path) {

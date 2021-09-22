@@ -37,6 +37,11 @@ xsite:
   masterCandidate: true
   maxSiteMasters: 1
   transport: tcp
+transport:
+  tls:
+    enabled: false
+    keystore: # needs path and password
+      alias: jgroups
 
 logging:
   console:

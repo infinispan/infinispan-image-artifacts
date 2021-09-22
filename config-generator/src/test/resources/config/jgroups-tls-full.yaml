@@ -1,0 +1,10 @@
+transport:
+  tls:
+    enabled: true
+    keystore:
+      path: jgroups-keystore.p12
+      password: secret
+      alias: transport
+    truststore:
+      path: jgroups-truststore.p12
+      password: anotherSecret
