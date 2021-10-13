@@ -11,7 +11,7 @@
     <artifactId>config-generator</artifactId>
     <properties>
         <quarkus.package.type>uber-jar</quarkus.package.type>
-        <version.quarkus>1.7.6.Final</version.quarkus>
+        <version.quarkus>2.3.0.Final</version.quarkus>
         <version.xmlunit>2.8.2</version.xmlunit>
     </properties>
     <dependencyManagement>

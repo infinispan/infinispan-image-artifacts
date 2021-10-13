@@ -33,7 +33,7 @@ import javax.inject.Inject;
 import io.quarkus.qute.RawString;
 import io.quarkus.qute.Template;
 import io.quarkus.qute.TemplateExtension;
-import io.quarkus.qute.api.ResourcePath;
+import io.quarkus.qute.Location;
 
 @ApplicationScoped
 public class ConfigGenerator {
@@ -45,8 +45,7 @@ public class ConfigGenerator {
    @Inject
    Template infinispan;
 
-   @Inject
-   @ResourcePath(JGROUPS_RELAY_FILE)
+   @Location(JGROUPS_RELAY_FILE)
    Template jgroupsRelay;
 
    @Inject
